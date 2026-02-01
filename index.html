@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>For You</title>
+
+  <!-- Letter font -->
+  <link href="https://fonts.googleapis.com/css2?family=Allura&display=swap" rel="stylesheet">
+
+  <style>
+    @font-face {
+      font-family: Amsterdam;
+      src: url("fonts/amsterdam-four.ttf") format("truetype");
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      font-family: Amsterdam, serif;
+      background: #ffe6ec;
+    }
+
+    /* SUNFLOWER FIELD */
+    .sunflowers {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 140px;
+      background: url("sunflower.png") repeat-x bottom center;
+      background-size: 95px;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* INTRO */
+    .intro {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background: linear-gradient(180deg, #fff1f4, #ffe6ec);
+      z-index: 3;
+    }
+
+    .intro p {
+      font-size: 30px;
+      line-height: 1.6;
+    }
+
+    button {
+      font-family: inherit;
+      font-size: 18px;
+      padding: 14px 34px;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+
+    #yes {
+      background: #ff5f7e;
+      color: white;
+      margin-top: 30px;
+    }
+
+    #no {
+      background: #dedede;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      transition: transform 0.35s ease-out;
+      z-index: 4;
+    }
+
+    /* POEM SCREEN */
+    .poem-screen {
+      position: fixed;
+      inset: 0;
+      display: none;
+      background-size: cover;
+      background-position: center;
+      z-index: 2;
+    }
+
+    .poem-screen::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.1);
+    }
+
+    .poem-content {
+      position: relative;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      padding-left: 7vw;
+      z-index: 3;
+    }
+
+    .poem-box {
+      max-width: 520px;
+      background: rgba(255,255,255,0.35);
+      backdrop-filter: blur(4px);
+      border-radius: 18px;
+      padding: 18px 22px;
+    }
+
+    .poem-box p {
+      font-size: 26px;
+      line-height: 1.55;
+      white-space: pre-line;
+      text-shadow: 0 3px 14px rgba(0,0,0,0.25);
+    }
+
+    .hint {
+      margin-top: 12px;
+      font-size: 15px;
+      opacity: 0.7;
+    }
+
+    /* SUNFLOWER BUTTON */
+    .sunflower-btn {
+      display: none;
+      position: absolute;
+      bottom: 180px;
+      left: 7vw;
+      font-size: 42px;
+      cursor: pointer;
+      animation: float 2.5s ease-in-out infinite;
+      z-index: 5;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0); }
+    }
+
+    /* FINAL LETTER */
+    .final-letter {
+      position: fixed;
+      inset: 0;
+      display: none;
+      background: url("img3.jpg") center/cover no-repeat;
+      z-index: 6;
+    }
+
+    .final-letter::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      backdrop-filter: blur(14px);
+      background: rgba(255,255,255,0.25);
+    }
+
+   .final-letter-content {
+  position: relative;
+  max-width: 900px;
+  max-height: 80vh;
+  margin: 8vh auto;
+  background: rgba(255,255,255,0.35);
+  backdrop-filter: blur(6px);
+  border-radius: 22px;
+  padding: 36px 42px;
+  font-family: "Allura", cursive;
+  font-size: 30px;
+  line-height: 1.85;
+  white-space: pre-line;
+  color: #1f1f1f;
+  text-shadow: 0 3px 14px rgba(0,0,0,0.25);
+  overflow-y: auto;
+}
+
+  </style>
+</head>
+
+<body>
+
+  <div class="sunflowers"></div>
+
+  <!-- INTRO -->
+  <div class="intro" id="intro">
+    <p>
+      Hey bubba<br><br>
+      I was wondering<br>
+      how badly you’d try to say no<br>
+      before saying yes
+    </p>
+    <button id="yes">Yes</button>
+  </div>
+
+  <button id="no">No</button>
+
+  <!-- POEM -->
+  <div class="poem-screen" id="poemScreen">
+    <div class="poem-content">
+      <div class="poem-box">
+        <p id="poemText"></p>
+        <div class="hint" id="hint">just click ✨</div>
+      </div>
+    </div>
+    <div class="sunflower-btn" id="sunflower">🌻</div>
+  </div>
+
+  <!-- FINAL LETTER -->
+  <div class="final-letter" id="finalLetter">
+    <div class="final-letter-content" id="letterText"></div>
+  </div>
+
+  <script>
+    const yesBtn = document.getElementById("yes");
+    const noBtn = document.getElementById("no");
+    const intro = document.getElementById("intro");
+    const poemScreen = document.getElementById("poemScreen");
+    const poemText = document.getElementById("poemText");
+    const sunflower = document.getElementById("sunflower");
+    const hint = document.getElementById("hint");
+    const finalLetter = document.getElementById("finalLetter");
+    const letterText = document.getElementById("letterText");
+
+    const lines = [
+      "चंद्र म्हणू कि चांदणे म्हणू",
+      "तुझ्या तेजाला अजून कितीदा भाळु",
+      "थोडा आळा घाल आता स्वतःच्या सौंदर्याला प्रिये",
+      "कारण तुला नको असतानाही",
+      "तुझा प्रेमात पडतोय मी हळू हळू"
+    ];
+
+    let index = 0;
+    let stage = 0;
+
+    // NO BUTTON FULL-SCREEN ESCAPE
+    document.addEventListener("mousemove", e => {
+      const rect = noBtn.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
+
+      if (dist < 180) {
+        const x = (Math.random() - 0.5) * window.innerWidth;
+        const y = (Math.random() - 0.5) * window.innerHeight;
+        noBtn.style.transform = `translate(${x}px, ${y}px)`;
+      }
+    });
+
+    yesBtn.onclick = () => {
+      intro.style.display = "none";
+      noBtn.style.display = "none";
+      poemScreen.style.display = "block";
+      poemText.textContent =
+        "You’re not saying yes to a question my love\n" +
+        "you’re saying yes to a feeling\n" +
+        "that’s been finding its way to you my sweet sweet bubbushka";
+      stage = 0;
+    };
+
+    poemScreen.onclick = () => {
+      if (stage === 0) {
+        poemScreen.style.backgroundImage = "url('img1.jpg')";
+        poemText.textContent = lines[0];
+        index = 1;
+        stage = 1;
+        return;
+      }
+
+      if (index < lines.length) {
+        poemText.textContent += "\n" + lines[index];
+
+        if (index <= 1) poemScreen.style.backgroundImage = "url('img1.jpg')";
+        else if (index <= 3) poemScreen.style.backgroundImage = "url('img2.jpg')";
+        else poemScreen.style.backgroundImage = "url('img3.jpg')";
+
+        index++;
+
+        if (index === lines.length) {
+          hint.textContent = "double click the sunflower 🌻";
+          sunflower.style.display = "block";
+        }
+      }
+    };
+
+    sunflower.ondblclick = () => {
+      poemScreen.style.display = "none";
+      finalLetter.style.display = "block";
+
+      letterText.textContent =
+`There’s this old Turkish saying
+if you truly love someone, you love them twice.
+
+Jaan,
+you always hid when you were in pain.
+Back then, I didn’t try hard enough to understand what I was doing to you.
+The pain between us was because of me. All of it.
+And it cost us. It cost me more than I ever imagined.
+
+You only understand something once you lose it.
+And yes, I’ve lost you. I accept that.
+But I still want to come back to you.
+I want to love you again with my whole heart.
+To adore your heart the way I should have from the start.
+
+You told me how much I hurt you, and you were right.
+That was the old me, trying to make things right in the wrong way.
+Hurting you on that path was never something I wanted or even realized I was doing.
+I can’t take back what I did, I know that.
+I’m just asking, why not give us another chance?
+
+One chance to rebuild what we had.
+This time, the right way.
+Because I’ve realized something important.
+I don’t love you just for the sake of loving.
+I love you because you’re a part of me I never knew existed.
+And now that you’re not here, I can’t breathe the same.
+
+I’m sorry for everything I did before.
+I was naive, angry, and careless for no real reason.
+I never meant for any of it to lead us here.
+
+This time, I’m going to share everything that’s yours.
+Everything, including your sadness, your happiness, and your despair.
+So you don’t have to hide anything from me or always be the tough person you are.
+You just have to make sure you leave me my share.
+Because if you don’t lean on me, I’ll be lonely.
+
+Whether it’s happiness or pain, no matter what it is,
+let’s suffer together.
+Because it’s a hundred times better
+than being all alone.`;
+    };
+  </script>
+
+</body>
+</html>
