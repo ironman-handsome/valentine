@@ -10,8 +10,6 @@
 
 body{
 margin:0;
-height:100vh;
-overflow:hidden;
 font-family:serif;
 background:#ffe6ec;
 }
@@ -96,14 +94,14 @@ white-space:pre-line;
 color:#111;
 }
 
-/* FINAL LETTER */
+/* LETTER SCREENS */
 .final-letter,
 .second-letter{
 position:fixed;
 inset:0;
 display:none;
 background:url("img3.jpg") center/cover no-repeat;
-z-index:6;
+overflow-y:auto; /* THIS IS IMPORTANT */
 }
 
 .final-letter::before,
@@ -120,7 +118,6 @@ background:rgba(0,0,0,.3);
 position:relative;
 width:90%;
 max-width:900px;
-height:80vh;
 margin:8vh auto;
 background:rgba(255,255,255,.4);
 backdrop-filter:blur(6px);
@@ -131,7 +128,6 @@ font-size:22px;
 line-height:1.8;
 white-space:pre-line;
 color:#111;
-overflow-y:auto;
 }
 
 .more-btn{
@@ -174,6 +170,7 @@ there’s one more thing I never said
 <div class="second-letter" id="secondLetter">
 <div class="second-letter-content" id="secondLetterText"></div>
 </div>
+
 <script>
 
 const yesBtn=document.getElementById("yes");
